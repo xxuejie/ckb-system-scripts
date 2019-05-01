@@ -519,6 +519,7 @@ __flatbuffers_define_scalar_field(8, Ckb_Protocol_Header, nonce, flatbuffers_uin
 __flatbuffers_define_table_field(9, Ckb_Protocol_Header, proof, Ckb_Protocol_Bytes_table_t, 0)
 __flatbuffers_define_struct_field(10, Ckb_Protocol_Header, uncles_hash, Ckb_Protocol_H256_struct_t, 0)
 __flatbuffers_define_scalar_field(11, Ckb_Protocol_Header, uncles_count, flatbuffers_uint32, uint32_t, UINT32_C(0))
+__flatbuffers_define_table_field(12, Ckb_Protocol_Header, dao, Ckb_Protocol_Bytes_table_t, 0)
 
 struct Ckb_Protocol_Block_table { uint8_t unused__; };
 
