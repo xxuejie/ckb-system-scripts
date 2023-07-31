@@ -103,8 +103,15 @@ int main() {
 
   mol_seg_t args_seg = MolReader_Script_get_args(&script_seg);
   mol_seg_t args_bytes_seg = MolReader_Bytes_raw_bytes(&args_seg);
-  if (args_bytes_seg.size != BLAKE160_SIZE) {
+  if (args_bytes_seg.size < BLAKE160_SIZE) {
     return ERROR_ARGUMENTS_LEN;
+  }
+  if (args_bytes_seg.size > BLAKE160_SIZE) {
+    for (uint32_t i = 20; i < args_bytes_seg.size; i++) {
+      if (args_bytes_seg.ptr[i] != 0) {
+        return ERROR_ARGUMENTS_LEN;
+      }
+    }
   }
 
   // Load the first witness, or the witness of the same index as the first input using
