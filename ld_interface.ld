@@ -1,4 +1,5 @@
 PHDRS {
+    dummy PT_LOAD FLAGS(5) ;
     text PT_LOAD FLAGS(5) ;
     data PT_LOAD FLAGS(6) ;
 
@@ -6,8 +7,15 @@ PHDRS {
     stack PT_GNU_STACK FLAGS(6) ;
 }
 
+ENTRY(__ckb_bootloader_start)
+
 SECTIONS {
-    . = 0x1000;
+    . = 0x0;
+    .ckb.vm.dummy : ALIGN(0x1000) {
+        BYTE(0)
+    } : dummy
+
+    . = 0x120000;
 
     .dynsym : {
         *(.dynsym)

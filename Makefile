@@ -20,19 +20,19 @@ all: specs/cells/secp256k1_blake160_sighash_all specs/cells/dao specs/cells/secp
 all-via-docker: ${PROTOCOL_HEADER}
 	docker run --rm -v `pwd`:/code ${BUILDER_DOCKER} bash -c "cd /code && make"
 
-specs/cells/secp256k1_blake160_sighash_all: c/secp256k1_blake160_sighash_all.c ${PROTOCOL_HEADER} c/common.h c/utils.h build/secp256k1_data_info.h $(SECP256K1_SRC)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
-	$(OBJCOPY) --only-keep-debug $@ $(subst specs/cells,build,$@.debug)
+specs/cells/secp256k1_blake160_sighash_all: c/secp256k1_blake160_sighash_all.c ${PROTOCOL_HEADER} c/common.h c/utils.h build/secp256k1_data_info.h $(SECP256K1_SRC) bootloader.S
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< bootloader.S
+	cp $@ $(subst specs/cells,build,$@.debug)
 	$(OBJCOPY) --strip-debug --strip-all $@
 
-specs/cells/secp256k1_blake160_multisig_all: c/secp256k1_blake160_multisig_all.c ${PROTOCOL_HEADER} c/common.h c/utils.h build/secp256k1_data_info.h $(SECP256K1_SRC)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
-	$(OBJCOPY) --only-keep-debug $@ $(subst specs/cells,build,$@.debug)
+specs/cells/secp256k1_blake160_multisig_all: c/secp256k1_blake160_multisig_all.c ${PROTOCOL_HEADER} c/common.h c/utils.h build/secp256k1_data_info.h $(SECP256K1_SRC) bootloader.S
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< bootloader.S
+	cp $@ $(subst specs/cells,build,$@.debug)
 	$(OBJCOPY) --strip-debug --strip-all $@
 
-specs/cells/dao: c/dao.c ${PROTOCOL_HEADER} deps/builtins/build/libcompiler-rt.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -L./deps/builtins/build -lcompiler-rt -o $@ $<
-	$(OBJCOPY) --only-keep-debug $@ $(subst specs/cells,build,$@.debug)
+specs/cells/dao: c/dao.c ${PROTOCOL_HEADER} deps/builtins/build/libcompiler-rt.a bootloader.S
+	$(CC) $(CFLAGS) $(LDFLAGS) -L./deps/builtins/build -lcompiler-rt -o $@ $< bootloader.S
+	cp $@ $(subst specs/cells,build,$@.debug)
 	$(OBJCOPY) --strip-debug --strip-all $@
 
 build/secp256k1_data_info.h: build/dump_secp256k1_data
