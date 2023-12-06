@@ -1,9 +1,9 @@
-TARGET := riscv64-unknown-elf
-CC := $(TARGET)-gcc
-LD := $(TARGET)-gcc
-OBJCOPY := $(TARGET)-objcopy
-CFLAGS := -O3 -Ideps/molecule -I deps/secp256k1/src -I deps/secp256k1 -I c -I build -Wall -Werror -Wno-nonnull-compare -Wno-unused-function -g
-LDFLAGS := -Wl,-static -fdata-sections -ffunction-sections -Wl,--gc-sections
+CC := clang-16
+LD := ld.lld-16
+OBJCOPY := llvm-objcopy-16
+COMMON_CFLAGS := -O3 -Ideps/molecule -I deps/secp256k1/src -I deps/secp256k1 -I c -I build -Wall -Werror -Wno-unused-function -g
+CFLAGS := --target=riscv64 -march=rv64imc $(COMMON_CFLAGS) -nostdlib -nostdinc -I deps/ckb-c-stdlib/libc
+LDFLAGS := -Wl,-static -fdata-sections -ffunction-sections -Wl,--gc-sections -Tld_interface.ld
 SECP256K1_SRC := deps/secp256k1/src/ecmult_static_pre_context.h
 MOLC := moleculec
 MOLC_VERSION := 0.4.1
@@ -30,8 +30,8 @@ specs/cells/secp256k1_blake160_multisig_all: c/secp256k1_blake160_multisig_all.c
 	$(OBJCOPY) --only-keep-debug $@ $(subst specs/cells,build,$@.debug)
 	$(OBJCOPY) --strip-debug --strip-all $@
 
-specs/cells/dao: c/dao.c ${PROTOCOL_HEADER}
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+specs/cells/dao: c/dao.c ${PROTOCOL_HEADER} deps/builtins/build/libcompiler-rt.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -L./deps/builtins/build -lcompiler-rt -o $@ $<
 	$(OBJCOPY) --only-keep-debug $@ $(subst specs/cells,build,$@.debug)
 	$(OBJCOPY) --strip-debug --strip-all $@
 
@@ -40,12 +40,15 @@ build/secp256k1_data_info.h: build/dump_secp256k1_data
 
 build/dump_secp256k1_data: c/dump_secp256k1_data.c $(SECP256K1_SRC)
 	mkdir -p build
-	gcc $(CFLAGS) -o $@ $<
+	$(CC) $(COMMON_CFLAGS) -o $@ $<
+
+deps/builtins/build/libcompiler-rt.a:
+	cd deps/builtins && make CFLAGS="--target=riscv64 -march=rv64imc -mabi=lp64"
 
 $(SECP256K1_SRC):
 	cd deps/secp256k1 && \
 		./autogen.sh && \
-		CC=$(CC) LD=$(LD) ./configure --with-bignum=no --enable-ecmult-static-precomputation --enable-endomorphism --enable-module-recovery --host=$(TARGET) && \
+		CC=$(CC) LD=$(LD) ./configure --with-bignum=no --enable-ecmult-static-precomputation --enable-endomorphism --enable-module-recovery --with-asm=no && \
 		make src/ecmult_static_pre_context.h src/ecmult_static_context.h
 
 generate-protocol: check-moleculec-version ${PROTOCOL_HEADER}
@@ -89,6 +92,7 @@ clean:
 	rm -rf specs/cells/secp256k1_data
 	rm -rf build/*.debug
 	cd deps/secp256k1 && [ -f "Makefile" ] && make clean
+	cd deps/builtins && make clean
 	cargo clean
 
 dist: clean all
