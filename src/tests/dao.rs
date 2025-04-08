@@ -1,4 +1,6 @@
-use super::{sign_tx, DummyDataLoader, DAO_BIN, MAX_CYCLES, SECP256K1_DATA_BIN, SIGHASH_ALL_BIN};
+use super::{
+    save_tx, sign_tx, DummyDataLoader, DAO_BIN, MAX_CYCLES, SECP256K1_DATA_BIN, SIGHASH_ALL_BIN,
+};
 use byteorder::{ByteOrder, LittleEndian};
 use ckb_crypto::secp::{Generator, Privkey};
 use ckb_dao_utils::pack_dao_data;
@@ -273,6 +275,7 @@ fn test_dao_single_cell() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -342,6 +345,7 @@ fn test_dao_single_cell_epoch_edge() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -411,6 +415,7 @@ fn test_dao_single_cell_start_of_epoch() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -480,6 +485,7 @@ fn test_dao_single_cell_end_of_epoch() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -549,6 +555,7 @@ fn test_dao_single_cell_with_fees() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -627,6 +634,7 @@ fn test_dao_single_cell_with_dao_output_cell() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -736,6 +744,7 @@ fn test_dao_multiple_cells() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -802,6 +811,7 @@ fn test_dao_missing_deposit_header() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -867,6 +877,7 @@ fn test_dao_missing_withdraw_header() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -938,6 +949,7 @@ fn test_dao_invalid_deposit_header() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1014,6 +1026,7 @@ fn test_dao_invalid_withdraw_amount() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1088,6 +1101,7 @@ fn test_dao_invalid_since() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1159,6 +1173,7 @@ fn test_dao_invalid_withdraw_from_deposited_cell() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1211,6 +1226,7 @@ fn test_dao_deposit_cell() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -1260,6 +1276,7 @@ fn test_dao_deposit_invalid_cell() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1316,6 +1333,7 @@ fn test_dao_deposit_cell_missing_data() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1383,6 +1401,7 @@ fn test_dao_create_withdrawing_cell() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -1447,6 +1466,7 @@ fn test_dao_create_withdrawing_cell_with_different_lock() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -1510,6 +1530,7 @@ fn test_dao_create_withdrawing_cell_with_invalid_type() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1576,6 +1597,7 @@ fn test_dao_create_withdrawing_cell_with_invalid_data() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1643,6 +1665,7 @@ fn test_dao_create_withdrawing_cell_with_invalid_capacity() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     assert_error_eq!(
@@ -1722,6 +1745,7 @@ fn test_dao_too_many_output_cells() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");
@@ -1826,6 +1850,7 @@ fn test_dao_all_dao_actions() {
         resolved_cell_deps,
         resolved_dep_groups: vec![],
     });
+    save_tx(&rtx, &data_loader, "dao");
 
     let verify_result = TransactionScriptsVerifier::new(rtx, data_loader).verify(MAX_CYCLES);
     verify_result.expect("pass verification");

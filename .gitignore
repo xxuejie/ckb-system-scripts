@@ -57,3 +57,10 @@ target
 ./tmp
 .idea/
 /specs/cells
+
+/fuzzing/fuzzing_syscalls_all_in_one.h
+/fuzzing/dumps
+/fuzzing/corpus*
+/fuzzing/*.o
+/fuzzing/*_fuzzer
+/fuzzing/binary_to_text_converter

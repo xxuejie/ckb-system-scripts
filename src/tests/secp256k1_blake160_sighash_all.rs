@@ -1,6 +1,6 @@
 use super::{
-    blake160, sign_tx, sign_tx_by_input_group, DummyDataLoader, MAX_CYCLES, SECP256K1_DATA_BIN,
-    SIGHASH_ALL_BIN,
+    blake160, save_tx, sign_tx, sign_tx_by_input_group, DummyDataLoader, MAX_CYCLES,
+    SECP256K1_DATA_BIN, SIGHASH_ALL_BIN,
 };
 use ckb_crypto::secp::{Generator, Privkey};
 use ckb_error::assert_error_eq;
@@ -176,12 +176,14 @@ fn build_resolved_tx(data_loader: &DummyDataLoader, tx: &TransactionView) -> Res
         );
     }
 
-    ResolvedTransaction {
+    let rtx = ResolvedTransaction {
         transaction: tx.clone(),
         resolved_cell_deps,
         resolved_inputs,
         resolved_dep_groups: vec![],
-    }
+    };
+    save_tx(&rtx, data_loader, "sighash");
+    rtx
 }
 
 #[test]

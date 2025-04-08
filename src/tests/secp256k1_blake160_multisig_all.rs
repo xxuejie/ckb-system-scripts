@@ -1,4 +1,4 @@
-use super::{blake160, DummyDataLoader, MAX_CYCLES, MULTISIG_ALL_BIN, SECP256K1_DATA_BIN};
+use super::{blake160, save_tx, DummyDataLoader, MAX_CYCLES, MULTISIG_ALL_BIN, SECP256K1_DATA_BIN};
 use ckb_crypto::secp::{Generator, Privkey};
 use ckb_error::{assert_error_eq, Error};
 use ckb_script::{ScriptError, TransactionScriptsVerifier};
@@ -837,12 +837,15 @@ fn build_resolved_tx(data_loader: &DummyDataLoader, tx: &TransactionView) -> Res
                 .build()
         })
         .collect::<Vec<_>>();
-    ResolvedTransaction {
+
+    let rtx = ResolvedTransaction {
         transaction: tx.clone(),
         resolved_cell_deps,
         resolved_inputs,
         resolved_dep_groups: vec![],
-    }
+    };
+    save_tx(&rtx, data_loader, "multisig");
+    rtx
 }
 
 fn generate_keys(n: usize) -> Vec<Privkey> {

@@ -81,7 +81,7 @@
 // The args part can store an optional 64-bit unsigned little endian value denoting
 // a lock period. The format of the lock period value should confront to the
 // [RFC specification](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0017-tx-valid-since/0017-tx-valid-since.md).
-int main() {
+int main(int argc, char* argv[]) {
   int ret;
   uint64_t len;
   unsigned char temp[TEMP_SIZE];
