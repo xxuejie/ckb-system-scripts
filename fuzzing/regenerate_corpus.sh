@@ -11,7 +11,8 @@ cd $FUZZING_DIR
 rm -rf dumps corpus
 
 cd $TOP
-DUMP_TXS_PATH=fuzzing/dumps cargo test
+# Even when some test fails, the corpus will still be useful
+DUMP_TXS_PATH=fuzzing/dumps cargo test --no-fail-fast || true
 
 cd $FUZZING_DIR
 for f in $(find dumps -type f -name "0x*.json"); do

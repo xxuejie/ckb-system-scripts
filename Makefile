@@ -12,13 +12,18 @@ PROTOCOL_SCHEMA := c/blockchain.mol
 PROTOCOL_VERSION := d75e4c56ffa40e17fd2fe477da3f98c5578edcd1
 PROTOCOL_URL := https://raw.githubusercontent.com/nervosnetwork/ckb/${PROTOCOL_VERSION}/util/types/schemas/blockchain.mol
 
+FUZZING_EMBED_DATA :=
+ifeq (true,$(FUZZING_EMBED_DATA))
+	CFLAGS += -DFUZZING_EMBED_DATA
+endif
+
 # docker pull nervos/ckb-riscv-gnu-toolchain:bionic-20190702
 BUILDER_DOCKER := nervos/ckb-riscv-gnu-toolchain@sha256:7b168b4b109a0f741078a71b7c4dddaf1d283a5244608f7851f5714fbad273ba
 
 all: specs/cells/secp256k1_blake160_sighash_all specs/cells/dao specs/cells/secp256k1_blake160_multisig_all
 
 all-via-docker: ${PROTOCOL_HEADER}
-	docker run --rm -v `pwd`:/code ${BUILDER_DOCKER} bash -c "cd /code && make"
+	docker run --rm -v `pwd`:/code ${BUILDER_DOCKER} bash -c "cd /code && make FUZZING_EMBED_DATA=$(FUZZING_EMBED_DATA)"
 
 specs/cells/secp256k1_blake160_sighash_all: c/secp256k1_blake160_sighash_all.c ${PROTOCOL_HEADER} c/common.h c/utils.h build/secp256k1_data_info.h $(SECP256K1_SRC)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<

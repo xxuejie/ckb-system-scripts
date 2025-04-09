@@ -81,7 +81,9 @@ fn main() {
         for (name, expected, actual) in errors.into_iter() {
             eprintln!("{}: expect {}, actual {}", name, expected, actual);
         }
-        panic!("not all hashes are right");
+        if env::var_os("FUZZING_SKIP_HASH_CHECKING").is_none() {
+            panic!("not all hashes are right");
+        }
     }
 
     bundled.build("bundled.rs").expect("build resource bundle");

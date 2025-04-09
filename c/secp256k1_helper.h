@@ -29,6 +29,27 @@ void secp256k1_default_error_callback_fn(const char* str, void* data) {
   ckb_exit(CKB_SECP256K1_HELPER_ERROR_ERROR_CALLBACK);
 }
 
+#ifdef FUZZING_EMBED_DATA
+#include "ecmult_static_pre_context.h"
+int ckb_secp256k1_custom_verify_only_initialize(secp256k1_context* context,
+                                                void* data) {
+  (void) data;
+  (void) ckb_secp256k1_data_hash;
+
+  context->illegal_callback = default_illegal_callback;
+  context->error_callback = default_error_callback;
+
+  secp256k1_ecmult_context_init(&context->ecmult_ctx);
+  secp256k1_ecmult_gen_context_init(&context->ecmult_gen_ctx);
+
+  context->ecmult_ctx.pre_g =
+    (secp256k1_ge_storage(*)[]) secp256k1_ecmult_static_pre_context;
+  context->ecmult_ctx.pre_g_128 =
+    (secp256k1_ge_storage(*)[]) secp256k1_ecmult_static_pre128_context;
+
+  return 0;
+}
+#else
 /*
  * data should at least be CKB_SECP256K1_DATA_SIZE big
  * so as to hold all loaded data.
@@ -84,5 +105,6 @@ int ckb_secp256k1_custom_verify_only_initialize(secp256k1_context* context,
 
   return 0;
 }
+#endif
 
 #endif
